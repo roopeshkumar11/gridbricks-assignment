@@ -5,7 +5,7 @@ import { DecisionWorkbench } from "./components/DecisionWorkbench";
 import { ModelEvaluation } from "./components/ModelEvaluation";
 import { DomainGuide } from "./components/DomainGuide";
 import { SystemSummary, ComprehensiveMetricsResponse } from "./types";
-import { fetchSummary, fetchMetricsReport } from "./services/api";
+import { fetchSummary, fetchMetricsReport, pingHealth } from "./services/api";
 
 export function App() {
   const [activeTab, setActiveTab] = useState<string>("overview");
@@ -13,12 +13,25 @@ export function App() {
   const [summary, setSummary] = useState<SystemSummary | null>(null);
   const [metricsReport, setMetricsReport] = useState<ComprehensiveMetricsResponse | null>(null);
   const [loadingMetrics, setLoadingMetrics] = useState<boolean>(true);
+  const [isWakingUp, setIsWakingUp] = useState<boolean>(false);
 
   useEffect(() => {
     loadInitialData();
+
+    // Keep-alive: automatically ping backend every 8 minutes while user has dashboard open
+    const keepAliveTimer = setInterval(() => {
+      pingHealth();
+    }, 8 * 60 * 1000);
+
+    return () => clearInterval(keepAliveTimer);
   }, []);
 
   const loadInitialData = async () => {
+    // If backend doesn't respond in 3.5 seconds, server is likely waking up from Render sleep
+    const wakeTimer = setTimeout(() => {
+      setIsWakingUp(true);
+    }, 3500);
+
     try {
       setLoadingMetrics(true);
       const [sum, rep] = await Promise.all([
@@ -30,6 +43,8 @@ export function App() {
     } catch (e) {
       console.error("Error loading initial data", e);
     } finally {
+      clearTimeout(wakeTimer);
+      setIsWakingUp(false);
       setLoadingMetrics(false);
     }
   };
@@ -52,6 +67,19 @@ export function App() {
         forecastsCount={summary?.counts.forecastsCount || 0}
         onSyncComplete={loadInitialData}
       />
+
+      {/* Render Server Sleep / Wake-up Banner */}
+      {isWakingUp && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-center text-xs sm:text-sm text-amber-900 flex items-center justify-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+          </span>
+          <span className="font-medium">
+            Waking up server from sleep (Render free tier cold start ~30s)... Analytics will appear automatically!
+          </span>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">

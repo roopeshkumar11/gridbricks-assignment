@@ -7,9 +7,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
+import asyncio
 from backend.app.api.routes import router as api_router
-from backend.app.config import PORT, HOST
+from backend.app.config import PORT, HOST, RENDER_EXTERNAL_URL, KEEP_ALIVE_INTERVAL_SECONDS
 from backend.app.services.storage import StorageRepository
+from backend.app.services.keep_alive import start_keep_alive_loop
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,7 +26,25 @@ async def lifespan(app: FastAPI):
     logger.info(
         f"Server started. Storage has {counts['actualsCount']} actuals and {counts['forecastsCount']} forecasts."
     )
+
+    keep_alive_task = None
+    if RENDER_EXTERNAL_URL:
+        logger.info(f"Enabling Render keep-alive self-ping for {RENDER_EXTERNAL_URL}")
+        keep_alive_task = asyncio.create_task(
+            start_keep_alive_loop(RENDER_EXTERNAL_URL, KEEP_ALIVE_INTERVAL_SECONDS)
+        )
+    else:
+        logger.info("RENDER_EXTERNAL_URL not set; running without background self-ping.")
+
     yield
+
+    if keep_alive_task:
+        keep_alive_task.cancel()
+        try:
+            await keep_alive_task
+        except asyncio.CancelledError:
+            pass
+
 
 app = FastAPI(
     title="UK Day-Ahead Renewable Wind Forecasting & Decision Support API",

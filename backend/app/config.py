@@ -22,3 +22,7 @@ UK_NOMINAL_WIND_CAPACITY_MW = 30000.0
 # Port configuration
 PORT = int(os.getenv("PORT", 8000))
 HOST = os.getenv("HOST", "0.0.0.0")
+
+# Render keep-alive configuration (Render automatically exposes RENDER_EXTERNAL_URL)
+RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL") or os.getenv("BACKEND_URL")
+KEEP_ALIVE_INTERVAL_SECONDS = int(os.getenv("KEEP_ALIVE_INTERVAL_SECONDS", 600))  # Default 10 minutes

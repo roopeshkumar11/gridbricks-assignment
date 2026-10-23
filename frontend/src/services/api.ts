@@ -8,6 +8,15 @@ import {
 
 const API_BASE = import.meta.env.VITE_API_URL || "";
 
+export async function pingHealth(): Promise<boolean> {
+  try {
+    const resp = await fetch(`${API_BASE}/api/health`);
+    return resp.ok;
+  } catch {
+    return false;
+  }
+}
+
 export async function fetchSummary(): Promise<SystemSummary> {
   const resp = await fetch(`${API_BASE}/api/summary`);
   if (!resp.ok) throw new Error("Failed to load system summary");
