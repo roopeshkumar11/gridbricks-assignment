@@ -113,7 +113,6 @@ gridbricks-assigmnet/
 ├── vercel.json                        # Deployment config for Vercel
 ├── Procfile                           # Process file for Heroku / Render deployment
 ├── runtime.txt                        # Python 3.11 runtime definition
-├── PITCH_AND_TECH_REVIEW.md           # Script & guide for the 10-minute video submission
 └── README.md                          # Comprehensive documentation
 ```
 
@@ -191,18 +190,3 @@ Open **`http://localhost:3000`** in your browser. Vite automatically proxies `/a
 
 * **Live Web Application (Vercel)**: [https://gridbricks-web.vercel.app/](https://gridbricks-web.vercel.app/)
 * **API Documentation (Swagger UI on Render)**: [https://gridbricks-assignment.onrender.com/docs](https://gridbricks-assignment.onrender.com/docs)
-
----
-
-## 7. Explicit Disclosure of AI Tools Used
-
-In compliance with the assignment instructions (*"You are free to use AI tools to assist with building this application (please mention it explicitly in the README if you’ve used AI tools)"*):
-
-* **AI Coding Assistants Used**: Google Gemini 3.8 Flash (via Antigravity AI pair programmer).
-* **Scope of AI Assistance**:
-  * Scaffolding initial boilerplate for React components and FastAPI route structures.
-  * Assisting with KaTeX mathematical formulas for energy trading metrics.
-  * Synthesizing Elexon BMRS API parameter schemas from official documentation.
-* **Human Validation & Engineering**:
-  * All statistical calculations, data normalization algorithms, database indexing, and unit tests were verified and tested against actual Elexon outturns.
-  * Complete domain logic (EPEX SPOT 11:00 UTC Gate Closure, 48 settlement periods, Balancing Mechanism cash-out exposure) was tailored specifically to the UK market context.
