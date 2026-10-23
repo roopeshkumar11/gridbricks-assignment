@@ -53,20 +53,20 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 text-slate-900 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 sm:h-16 gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16 gap-2 sm:gap-4">
           {/* Left: Brand + Navigation Tabs Grouped Naturally */}
-          <div className="flex items-center gap-3 sm:gap-6 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-4 md:gap-6 min-w-0 flex-1">
             {/* Logo & Brand */}
-            <div className="flex items-center gap-2.5 shrink-0">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-xs shadow-sky-500/20 shrink-0">
-                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-xs shadow-sky-500/20 shrink-0">
+                <Zap className="w-4 h-4 text-white" />
               </div>
-              <div className="flex items-center gap-2 whitespace-nowrap">
-                <span className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 leading-none">
+              <div className="flex items-center gap-1.5 whitespace-nowrap">
+                <span className="font-extrabold text-sm sm:text-base md:text-lg tracking-tight text-slate-900 leading-none">
                   GridPulse <span className="text-sky-600">UK</span>
                 </span>
-                <span className="hidden sm:inline text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
+                <span className="hidden sm:inline text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
                   BMRS
                 </span>
               </div>
@@ -75,8 +75,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Subtle Divider */}
             <div className="hidden sm:block h-5 w-px bg-slate-200 shrink-0" />
 
-            {/* Navigation Tabs (Grouped on left, clean & compact) */}
-            <nav className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar py-1">
+            {/* Navigation Tabs (Smooth horizontal scrolling on mobile, clean pills on desktop) */}
+            <nav className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar py-1 shrink min-w-0">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -84,13 +84,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                    className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                       isActive
                         ? "bg-sky-50 text-sky-700 border border-sky-200 shadow-xs font-bold"
                         : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent"
                     }`}
                   >
-                    <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isActive ? "text-sky-600" : "text-slate-400"}`} />
+                    <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-sky-600" : "text-slate-400"}`} />
                     <span>{item.label}</span>
                   </button>
                 );
@@ -99,20 +99,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Right: Market Cutoff Context & Sync Action */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-xs whitespace-nowrap">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-xs whitespace-nowrap">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-slate-700 font-medium">Jan 2026</span>
               <span className="text-slate-300">|</span>
               <Clock className="w-3.5 h-3.5 text-sky-600" />
-              <span className="text-slate-700 font-mono font-semibold">11:00 UTC Gate</span>
+              <span className="text-slate-700 font-mono font-semibold">11:00 UTC</span>
             </div>
 
             <button
               onClick={handleSync}
               disabled={syncing}
               title="Sync dataset directly with Elexon BMRS API"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-semibold shadow-xs transition-all disabled:opacity-50 cursor-pointer whitespace-nowrap"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-semibold shadow-xs transition-all disabled:opacity-50 cursor-pointer whitespace-nowrap"
             >
               <RefreshCw className={`w-3.5 h-3.5 shrink-0 ${syncing ? "animate-spin text-sky-600" : "text-slate-500"}`} />
               <span className="hidden sm:inline">{syncMessage || "Sync BMRS"}</span>
