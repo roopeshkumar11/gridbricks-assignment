@@ -1,0 +1,27 @@
+# Node dependencies & Vite build
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Python cache & tests
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Environment & IDE
+.env
+.env.local
+.vscode/
+.idea/
+.DS_Store
+
+# SQLite journal files (temporary)
+*.db-wal
+*.db-shm
+*.db-journal

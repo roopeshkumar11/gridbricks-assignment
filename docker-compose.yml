@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  gridpulse-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gridpulse-bmrs-app
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - SQLITE_DB_PATH=/app/backend/app/data/elexon_wind.db
+    volumes:
+      - ./backend/app/data:/app/backend/app/data
+    restart: unless-stopped
