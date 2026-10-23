@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 from pathlib import Path
 from contextlib import asynccontextmanager
@@ -6,6 +7,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+
+# Ensure root repository directory is in sys.path regardless of Render Root Directory setting
+_root_dir = Path(__file__).resolve().parent.parent.parent
+_backend_dir = Path(__file__).resolve().parent.parent
+for _p in (str(_root_dir), str(_backend_dir)):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 import asyncio
 from backend.app.api.routes import router as api_router
