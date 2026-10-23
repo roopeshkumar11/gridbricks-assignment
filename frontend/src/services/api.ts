@@ -6,7 +6,7 @@ import {
   ProcurementPlanResponse,
 } from "../types";
 
-const API_BASE = import.meta.env.VITE_API_URL || "";
+const API_BASE = import.meta.env.VITE_API_URL || "https://gridbricks-assignment.onrender.com";
 
 export async function pingHealth(): Promise<boolean> {
   try {
