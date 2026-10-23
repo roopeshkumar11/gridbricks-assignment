@@ -43,7 +43,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-white">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col font-sans selection:bg-sky-500 selection:text-white">
       {/* Top Navigation */}
       <Navbar
         activeTab={activeTab}
@@ -79,18 +79,18 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-slate-800/80 bg-slate-950/80 py-6 text-xs text-slate-400">
+      <footer className="mt-auto border-t border-slate-200 bg-white py-6 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-md bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-[10px]">
+            <div className="w-5 h-5 rounded-md bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-[10px]">
               GP
             </div>
             <span>
-              <strong>GridPulse UK</strong> • Day-Ahead Renewable Procurement Decision Platform
+              <strong className="text-slate-800">GridPulse UK</strong> • Day-Ahead Renewable Procurement Decision Platform
             </span>
           </div>
 
-          <div className="flex items-center gap-4 text-slate-400">
+          <div className="flex items-center gap-4 text-slate-500">
             <span>Data: Elexon BMRS (FUELHH & WINDFOR)</span>
             <span>•</span>
             <span>Target Window: January 2026</span>
