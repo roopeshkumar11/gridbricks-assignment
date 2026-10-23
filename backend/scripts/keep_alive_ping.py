@@ -41,7 +41,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         target_url = sys.argv[1]
     else:
-        target_url = "https://gridpulse-backend.onrender.com"
+        target_url = "https://gridbricks-assignment.onrender.com"
         print(f"No URL provided. Defaulting to: {target_url}")
         print("To specify your URL: python keep_alive_ping.py https://<your-service>.onrender.com\n")
 

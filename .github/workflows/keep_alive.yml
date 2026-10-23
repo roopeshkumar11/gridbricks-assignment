@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Ping Render Backend Health Endpoint
         env:
-          RENDER_URL: ${{ secrets.RENDER_BACKEND_URL || 'https://gridpulse-backend.onrender.com' }}
+          RENDER_URL: ${{ secrets.RENDER_BACKEND_URL || 'https://gridbricks-assignment.onrender.com' }}
         run: |
           echo "Pinging health endpoint at: ${RENDER_URL}/api/health"
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "${RENDER_URL}/api/health" || echo "000")
