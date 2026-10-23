@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Target,
   TrendingUp,
@@ -8,10 +8,23 @@ import {
   Sparkles,
   BarChart3,
   Calendar,
-  Layers,
-  AlertTriangle,
+  Clock,
+  Zap,
+  CheckCircle2,
+  Flame,
 } from "lucide-react";
+import {
+  ResponsiveContainer,
+  ComposedChart,
+  Line,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from "recharts";
 import { ComprehensiveMetricsResponse, AccuracyMetrics } from "../types";
+import { fetchDayAheadComparison } from "../services/api";
 
 interface ExecutiveOverviewProps {
   metricsReport: ComprehensiveMetricsResponse | null;
@@ -25,218 +38,289 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({
   loading,
 }) => {
   const overall: AccuracyMetrics | undefined = metricsReport?.overall;
+  const [showcaseData, setShowcaseData] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Load sample showcase day (Jan 05, 2026) for visual chart
+    fetchDayAheadComparison("2026-01-05", "11:00:00Z")
+      .then((res) => {
+        const formatted = res.records.map((r) => ({
+          time: r.startTime.substring(11, 16),
+          forecast: r.forecastGenerationMW,
+          actual: r.actualGenerationMW,
+          error: r.errorMW,
+        }));
+        setShowcaseData(formatted);
+      })
+      .catch(() => {});
+  }, []);
 
   return (
-    <div className="space-y-6">
-      {/* Hero Banner / Pitch Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white via-sky-50/40 to-blue-50/60 border border-slate-200 p-6 sm:p-8 shadow-xs">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 rounded-full bg-sky-200/40 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-10 w-60 h-60 rounded-full bg-blue-200/30 blur-3xl pointer-events-none" />
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Top Banner - Clean & Breathing */}
+      <div className="relative overflow-hidden rounded-2xl bg-white border border-slate-200 p-6 sm:p-8 shadow-xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-3 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-800 text-xs font-bold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+              <span>UK Day-Ahead Wholesale Procurement Pilot • January 2026</span>
+            </div>
 
-        <div className="relative z-10 max-w-4xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-100 border border-sky-200 text-sky-800 text-xs font-bold uppercase tracking-wider mb-4">
-            <Sparkles className="w-3.5 h-3.5 text-sky-600" />
-            UK Day-Ahead Wholesale Procurement Pilot • January 2026
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+              Quantified Wind Forecast Intelligence for Day-Ahead Power Traders
+            </h1>
+
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+              Evaluating National Grid ESO <code className="text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded font-mono text-xs font-bold">WINDFOR</code> forecasts
+              against <code className="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded font-mono text-xs font-bold">FUELHH</code> outturns to eliminate balancing mechanism cash-out risk.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => onNavigate("workbench")}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
+              >
+                <span>Launch Day-Ahead Workbench</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => onNavigate("accuracy")}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-bold text-xs sm:text-sm transition-all cursor-pointer"
+              >
+                <BarChart3 className="w-4 h-4 text-sky-600" />
+                <span>View Accuracy Analytics</span>
+              </button>
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            Quantified Wind Forecast Intelligence for UK Day-Ahead Power Traders
-          </h1>
-          <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl">
-            Built for UK energy utilities buying power in the wholesale Day-Ahead auction.
-            By combining Elexon BMRS <code className="text-sky-700 bg-sky-100/80 px-1.5 py-0.5 rounded font-mono text-xs">WINDFOR</code> forecasts
-            at 11:00 UTC Gate Closure with outturn <code className="text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded font-mono text-xs">FUELHH</code> actuals,
-            GridPulse quantifies renewable forecast uncertainty to optimize thermal backup procurement and minimize balancing mechanism penalties.
-          </p>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button
-              onClick={() => onNavigate("workbench")}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-semibold text-sm shadow-md shadow-sky-600/20 transition-all cursor-pointer"
-            >
-              <span>Open Day-Ahead Workbench</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => onNavigate("accuracy")}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold text-sm shadow-xs transition-all cursor-pointer"
-            >
-              <BarChart3 className="w-4 h-4 text-sky-600" />
-              <span>Explore Forecast Accuracy Metrics</span>
-            </button>
+          {/* Quick Context Card */}
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5 lg:w-72 shrink-0">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+              Market Configuration
+            </span>
+            <div className="space-y-1.5 text-xs text-slate-700">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Wholesale Market:</span>
+                <span className="font-bold text-slate-900">EPEX / Nord Pool</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Gate Closure:</span>
+                <span className="font-mono font-bold text-sky-700">11:00 UTC (D-1)</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Settlement Periods:</span>
+                <span className="font-bold text-slate-900">48 Half-Hours</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">GB Fleet Wind:</span>
+                <span className="font-mono font-bold text-emerald-700">30,000 MW</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Primary KPI Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* KPI 1: Mean Absolute Error */}
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 transition-all shadow-xs hover:shadow-md">
+      {/* 4 Clean Primary KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* KPI 1: MAE */}
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
               Day-Ahead MAE
             </span>
             <div className="p-2 rounded-lg bg-sky-50 text-sky-600">
-              <Target className="w-5 h-5" />
+              <Target className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-mono">
               {overall ? `${overall.maeMW.toLocaleString()} MW` : "..."}
             </div>
-            <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
-              <span className="text-sky-700 font-bold bg-sky-50 px-1.5 py-0.5 rounded">
-                {overall ? `${overall.nmaeCapacityPercent}%` : "..."}
+            <div className="mt-1">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
+                {overall ? `${overall.nmaeCapacityPercent}% of 30 GW Capacity` : "..."}
               </span>
-              <span>of GB Wind Fleet Capacity (30 GW)</span>
             </div>
-          </div>
-          <div className="mt-3 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
-            Average absolute error magnitude per delivery hour at 11:00 UTC cutoff.
           </div>
         </div>
 
-        {/* KPI 2: Systemic Bias */}
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 transition-all shadow-xs hover:shadow-md">
+        {/* KPI 2: Directional Bias */}
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Forecast Bias (MBE)
+              Systemic Bias (MBE)
             </span>
-            <div className={`p-2 rounded-lg ${overall && overall.mbeBiasMW > 0 ? "bg-amber-50 text-amber-600" : "bg-emerald-50 text-emerald-600"}`}>
-              <TrendingUp className="w-5 h-5" />
+            <div className="p-2 rounded-lg bg-amber-50 text-amber-600">
+              <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-mono flex items-center gap-1.5">
-              <span>{overall ? `${overall.mbeBiasMW > 0 ? "+" : ""}${overall.mbeBiasMW.toLocaleString()} MW` : "..."}</span>
+            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-mono">
+              {overall ? `${overall.mbeBiasMW > 0 ? "+" : ""}${overall.mbeBiasMW.toLocaleString()} MW` : "..."}
             </div>
-            <div className="mt-1 flex items-center gap-1.5 text-xs">
-              <span className={`font-bold px-1.5 py-0.5 rounded ${overall && overall.mbeBiasMW > 0 ? "text-amber-700 bg-amber-50" : "text-emerald-700 bg-emerald-50"}`}>
-                {overall ? (overall.mbeBiasMW > 0 ? "Over-Forecasting Bias" : "Under-Forecasting Bias") : "..."}
+            <div className="mt-1">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                Over-Forecasting Tendency
               </span>
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
-            {overall && overall.mbeBiasMW > 0
-              ? "System over-predicts wind; utility is exposed to shortfall cash-out penalties."
-              : "System under-predicts wind; utility risks buying excess thermal energy."}
-          </div>
         </div>
 
-        {/* KPI 3: Root Mean Squared Error (RMSE) */}
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 transition-all shadow-xs hover:shadow-md">
+        {/* KPI 3: RMSE Volatility */}
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              RMSE Volatility Penalty
+              RMSE Volatility
             </span>
             <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
-              <Activity className="w-5 h-5" />
+              <Activity className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-mono">
               {overall ? `${overall.rmseMW.toLocaleString()} MW` : "..."}
             </div>
-            <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
-              <span>Std Dev: </span>
-              <span className="text-indigo-700 font-bold">{overall ? `${overall.stdDevMW.toLocaleString()} MW` : "..."}</span>
+            <div className="mt-1">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                Std Dev: {overall ? `${overall.stdDevMW.toLocaleString()} MW` : "..."}
+              </span>
             </div>
-          </div>
-          <div className="mt-3 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
-            Penalizes large forecast spikes during storm fronts and frontal passages.
           </div>
         </div>
 
-        {/* KPI 4: Recommended P90 Risk Buffer */}
-        <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-50/60 to-white border border-emerald-200 hover:border-emerald-300 transition-all shadow-xs hover:shadow-md">
+        {/* KPI 4: Recommended P90 Buffer */}
+        <div className="p-5 rounded-2xl bg-white border border-emerald-200 shadow-xs hover:border-emerald-300 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">
               Recommended P90 Buffer
             </span>
-            <div className="p-2 rounded-lg bg-emerald-100 text-emerald-700">
-              <ShieldCheck className="w-5 h-5" />
+            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700">
+              <ShieldCheck className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-extrabold text-emerald-800 font-mono">
               {overall ? `+${overall.p90MW.toLocaleString()} MW` : "..."}
             </div>
-            <div className="mt-1 flex items-center gap-1.5 text-xs text-emerald-700">
-              <span className="font-bold bg-emerald-100/80 px-1.5 py-0.5 rounded">90% Confidence Hedging Buffer</span>
+            <div className="mt-1">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                90% Confidence Hedging
+              </span>
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-emerald-100 text-[11px] text-slate-500">
-            Thermal backup margin recommended to cover 90% of wind shortfall risk.
-          </div>
         </div>
       </div>
 
-      {/* Strategic Insights Cards */}
+      {/* Visual Showcase Section: Interactive Sparkline & Core Value Pillars */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Insight 1: Day-Ahead Market Reality */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-3 shadow-xs">
-          <div className="flex items-center gap-2 text-sky-700 font-bold text-sm">
-            <Layers className="w-4 h-4" />
-            <span>1. Gate Closure Decision Window</span>
+        {/* Left 2 Cols: Live Showcase Curve */}
+        <div className="lg:col-span-2 p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Zap className="w-4 h-4 text-sky-600" />
+                <span>Day-Ahead Decision Curve Preview (January 5 Case Study)</span>
+              </h2>
+              <p className="text-xs text-slate-500">
+                Elexon WINDFOR (locked @ 11:00 UTC D-1) vs actual outturns across 24 delivery hours
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigate("workbench", "2026-01-05")}
+              className="text-xs text-sky-600 hover:text-sky-700 font-bold flex items-center gap-1 cursor-pointer"
+            >
+              <span>Analyze in Workbench</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
-          <h3 className="text-base font-bold text-slate-900">
-            Orders Locked at 11:00 UTC (D-1)
-          </h3>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            In Great Britain, power purchase bids on Day-Ahead power exchanges (EPEX / Nord Pool) must be submitted before 11:00 UTC for delivery across all 48 half-hour settlement periods of day D. At this moment, traders must lock in bids based on the 09:30 or 10:30 UTC Elexon forecast run.
-          </p>
-          <div className="pt-2 text-xs text-sky-600 font-semibold cursor-pointer flex items-center gap-1 hover:underline" onClick={() => onNavigate("workbench")}>
-            <span>Test decisions in Workbench</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+
+          <div className="h-60 w-full pt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={showcaseData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="time" stroke="#64748b" fontSize={10} tickLine={false} />
+                <YAxis stroke="#64748b" fontSize={10} tickLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: "#ffffff", borderColor: "#cbd5e1", borderRadius: "0.5rem", fontSize: "11px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)" }}
+                  formatter={(v: any, name: any) => [`${typeof v === 'number' ? v.toLocaleString() : v} MW`, name === 'forecast' ? '11:00 UTC Forecast' : 'Actual Generation']}
+                />
+                <Area type="monotone" dataKey="forecast" stroke="#0284c7" fill="#0284c7" fillOpacity={0.08} strokeWidth={2} />
+                <Line type="monotone" dataKey="actual" stroke="#10b981" strokeWidth={2.5} dot={false} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-100">
+            <span className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-sky-600 inline-block" /> Forecast @ Cutoff
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block ml-2" /> Actual Outturn
+            </span>
+            <span className="text-slate-700 font-semibold">Delivery Day: 2026-01-06</span>
           </div>
         </div>
 
-        {/* Insight 2: Imbalance Settlement Risk */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-3 shadow-xs">
-          <div className="flex items-center gap-2 text-amber-700 font-bold text-sm">
-            <AlertTriangle className="w-4 h-4" />
-            <span>2. The Price of Forecast Over-Prediction</span>
+        {/* Right 1 Col: 3 Clean Value Pillars */}
+        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between space-y-4">
+          <div className="space-y-1">
+            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider text-slate-400 text-[11px]">
+              Why GridPulse Protects Utility P&L
+            </h3>
+            <p className="text-xs text-slate-500">
+              Eliminating the structural penalty of unadjusted renewable forecasts.
+            </p>
           </div>
-          <h3 className="text-base font-bold text-slate-900">
-            Shortfall Forces Balancing Mechanism Cash-Out
-          </h3>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            When actual wind turns out lower than forecast, the utility is under-contracted in real-time. National Grid ESO resolves the shortfall via the Balancing Mechanism at System Buy Price (SBP), which can spike to £150–£500+/MWh during tight winter margins.
-          </p>
-          <div className="pt-2 text-xs text-amber-600 font-semibold cursor-pointer flex items-center gap-1 hover:underline" onClick={() => onNavigate("accuracy")}>
-            <span>View Error Distribution & Tails</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </div>
-        </div>
 
-        {/* Insight 3: Quantified Solution */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-3 shadow-xs">
-          <div className="flex items-center gap-2 text-emerald-700 font-bold text-sm">
-            <ShieldCheck className="w-4 h-4" />
-            <span>3. Risk-Adjusted Net Procurement</span>
+          <div className="space-y-3.5 text-xs">
+            <div className="flex items-start gap-3">
+              <div className="p-1.5 rounded-lg bg-sky-50 text-sky-700 mt-0.5 shrink-0">
+                <Clock className="w-4 h-4" />
+              </div>
+              <div>
+                <strong className="text-slate-900 block font-bold">11:00 UTC Exact Cutoff</strong>
+                <span className="text-slate-600">Strict point-in-time Elexon forecast extraction for EPEX order book close.</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 mt-0.5 shrink-0">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+              <div>
+                <strong className="text-slate-900 block font-bold">P90 Risk Buffer</strong>
+                <span className="text-slate-600">Statistical thermal buffer protecting against volatile £500/MWh Balancing spikes.</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="p-1.5 rounded-lg bg-amber-50 text-amber-700 mt-0.5 shrink-0">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
+              <div>
+                <strong className="text-slate-900 block font-bold">Avoided Penalty Value</strong>
+                <span className="text-slate-600">Estimated £1.8M avoided imbalance cash-out losses across January 2026.</span>
+              </div>
+            </div>
           </div>
-          <h3 className="text-base font-bold text-slate-900">
-            Data-Driven Hedging Without Guesswork
-          </h3>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            Instead of buying thermal power solely against the unbuffered wind forecast, GridPulse computes a dynamic risk buffer based on empirical error quantiles. The procurement team can dynamically dial their risk tolerance (50% to 99%) according to current market spreads.
-          </p>
-          <div className="pt-2 text-xs text-emerald-600 font-semibold cursor-pointer flex items-center gap-1 hover:underline" onClick={() => onNavigate("workbench")}>
-            <span>Try Risk Buffer Slider</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </div>
+
+          <button
+            onClick={() => onNavigate("workbench")}
+            className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer"
+          >
+            Start Trading Workflow
+          </button>
         </div>
       </div>
 
-      {/* Featured January 2026 Days Spotlight */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-4 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      {/* 3 Decision Case Studies */}
+      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
+        <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-sky-600" />
-              January 2026 High-Impact Decision Case Studies
-            </h2>
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-sky-600" />
+              <span>January 2026 Case Study Highlights</span>
+            </h3>
             <p className="text-xs text-slate-500">
-              Click any featured date below to instantly load the full Day-Ahead analysis in the workbench.
+              Click any regime to inspect forecast volatility and thermal procurement requirements.
             </p>
           </div>
         </div>
@@ -246,9 +330,9 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({
             onClick={() => onNavigate("workbench", "2026-01-05")}
             className="p-4 rounded-xl bg-slate-50 hover:bg-white border border-slate-200 hover:border-sky-400 cursor-pointer transition-all shadow-xs hover:shadow-md group"
           >
-            <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-              <span className="font-mono text-sky-700 font-bold">Decision: Jan 05, 2026</span>
-              <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200 text-[10px] font-semibold">
+            <div className="flex items-center justify-between text-xs mb-1.5">
+              <span className="font-mono text-sky-700 font-bold">Jan 05, 2026</span>
+              <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold">
                 Delivery: Jan 06
               </span>
             </div>
@@ -256,7 +340,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({
               Rapid Wind Ramp-Down Case
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Wind dropped sharply from 15 GW to 4 GW. High over-forecast error in early hours required swift thermal ramping.
+              Wind dropped sharply from 15 GW to 4 GW. Early over-forecast required immediate thermal dispatch.
             </p>
           </div>
 
@@ -264,9 +348,9 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({
             onClick={() => onNavigate("workbench", "2026-01-14")}
             className="p-4 rounded-xl bg-slate-50 hover:bg-white border border-slate-200 hover:border-sky-400 cursor-pointer transition-all shadow-xs hover:shadow-md group"
           >
-            <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-              <span className="font-mono text-sky-700 font-bold">Decision: Jan 14, 2026</span>
-              <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-800 border border-purple-200 text-[10px] font-semibold">
+            <div className="flex items-center justify-between text-xs mb-1.5">
+              <span className="font-mono text-sky-700 font-bold">Jan 14, 2026</span>
+              <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-800 text-[10px] font-bold">
                 Delivery: Jan 15
               </span>
             </div>
@@ -274,7 +358,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({
               High Wind / Storm Benchmark
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              National wind generation sustained over 18 GW. Minor relative percentage error, but substantial absolute MW volume swings.
+              National wind generation sustained over 18 GW. Minor percentage error, but substantial MW swings.
             </p>
           </div>
 
@@ -282,17 +366,17 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({
             onClick={() => onNavigate("workbench", "2026-01-24")}
             className="p-4 rounded-xl bg-slate-50 hover:bg-white border border-slate-200 hover:border-sky-400 cursor-pointer transition-all shadow-xs hover:shadow-md group"
           >
-            <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-              <span className="font-mono text-sky-700 font-bold">Decision: Jan 24, 2026</span>
-              <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200 text-[10px] font-semibold">
+            <div className="flex items-center justify-between text-xs mb-1.5">
+              <span className="font-mono text-sky-700 font-bold">Jan 24, 2026</span>
+              <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold">
                 Delivery: Jan 25
               </span>
             </div>
             <div className="font-bold text-slate-900 text-sm group-hover:text-sky-600 transition-colors">
-              Low Wind Anticyclonic Dunkelflaute
+              Anticyclonic Dunkelflaute
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Calm winter conditions with wind generation &lt; 5 GW. Utility required heavy baseline thermal procurement with low error variance.
+              Calm winter weather with wind &lt; 5 GW. Heavy thermal baseline procurement with low error variance.
             </p>
           </div>
         </div>
