@@ -189,9 +189,8 @@ Open **`http://localhost:3000`** in your browser. Vite automatically proxies `/a
 
 ## 6. Live Deployment Links
 
-* **Live Web Application (Vercel / Heroku / Render)**: `https://gridpulse-bmrs.vercel.app` (or your deployed instance URL)
-* **API Documentation (Swagger UI)**: `http://localhost:8000/docs`
-* **Video Demo (Unlisted YouTube)**: See [PITCH_AND_TECH_REVIEW.md](PITCH_AND_TECH_REVIEW.md) for full script and video link.
+* **Live Web Application (Vercel)**: [https://gridbricks-web.vercel.app/](https://gridbricks-web.vercel.app/)
+* **API Documentation (Swagger UI on Render)**: [https://gridbricks-assignment.onrender.com/docs](https://gridbricks-assignment.onrender.com/docs)
 
 ---
 
