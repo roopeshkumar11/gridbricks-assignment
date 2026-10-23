@@ -6,7 +6,9 @@ import {
   ProcurementPlanResponse,
 } from "../types";
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://gridbricks-assignment.onrender.com";
+// Sanitize API_BASE from environment variable, safely stripping any trailing slashes
+const rawBase = (import.meta.env.VITE_API_URL || "").trim();
+const API_BASE = rawBase ? rawBase.replace(/\/+$/, "") : "";
 
 export async function pingHealth(): Promise<boolean> {
   try {
